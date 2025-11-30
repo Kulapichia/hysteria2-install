@@ -219,7 +219,7 @@ setup_nginx_subscription(){
     fi
     
     # 查找Nginx主配置文件路径
-    NGINX_CONF_PATH="/etc/nginx/nginx.conf" # 默认路径
+    NGINX_CONF_PATH="/etc/nginx/conf/nginx.conf" # 默认路径
     if [ ! -f "$NGINX_CONF_PATH" ]; then
         # 尝试其他常见路径
         if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
