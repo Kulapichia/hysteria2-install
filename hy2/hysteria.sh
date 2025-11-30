@@ -218,19 +218,36 @@ setup_nginx_subscription(){
         return
     fi
     
-    # 查找Nginx主配置文件路径
-    NGINX_CONF_PATH="/etc/nginx/conf/nginx.conf" # 默认路径
-    if [ ! -f "$NGINX_CONF_PATH" ]; then
-        # 尝试其他常见路径
-        if [ -f "/usr/local/nginx/conf/nginx.conf" ]; then
-            NGINX_CONF_PATH="/usr/local/nginx/conf/nginx.conf"
-        else
-            red "错误: 无法找到 nginx.conf 文件。请手动配置。"
-            return
-        fi
-    fi
+
+    # 定义一个包含所有可能路径的数组
+    # 路径的顺序很重要，会按此顺序查找
+    declare -a nginx_conf_paths=(
+        "/etc/nginx/nginx.conf"                # 常见于 Debian, Ubuntu
+        "/etc/nginx/conf/nginx.conf"           # 一些其他系统或编译安装
+        "/usr/local/nginx/conf/nginx.conf"     # 常见的源码编译安装路径
+        "/usr/local/etc/nginx/nginx.conf"      # Homebrew on macOS or other custom installs
+    )
     
-    green "检测到 Nginx 已安装，配置文件位于: $NGINX_CONF_PATH"
+    # 初始化 NGINX_CONF_PATH 变量
+    NGINX_CONF_PATH=""
+    
+    # 循环遍历数组，查找第一个存在的文件
+    for path in "${nginx_conf_paths[@]}"; do
+        if [ -f "$path" ]; then
+            NGINX_CONF_PATH="$path"
+            break # 找到后立即退出循环
+        fi
+    done
+    
+    # 检查是否找到了配置文件
+    if [ -z "$NGINX_CONF_PATH" ]; then
+        red "错误: 无法自动找到 nginx.conf 文件。"
+        yellow "请手动指定 nginx.conf 的路径或检查您的 Nginx 安装。"
+        return
+    fi
+
+    
+    green "检测到 Nginx 已安装，主配置文件位于: $NGINX_CONF_PATH"
     
     # 创建专门用于存放订阅文件的目录
     SUB_DIR="/var/www/clash_subscription"
