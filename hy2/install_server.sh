@@ -657,6 +657,13 @@ Environment=HYSTERIA_LOG_LEVEL=info
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
 NoNewPrivileges=true
+#
+# ++ ADDED FOR PERSISTENCE ++
+# Restart service upon failure
+Restart=on-failure
+# Wait 5 seconds before restarting
+RestartSec=5s
+# -- END OF ADDED SECTION --
 
 [Install]
 WantedBy=multi-user.target
